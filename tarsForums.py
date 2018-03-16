@@ -14,7 +14,7 @@ browser_default = RoboBrowser()
 def login(br:RoboBrowser):
     br.open(LOGIN_PAGE)
     form = br.get_form()
-    form["username"] = TARSUtils.NeonUser #doesn't exist yet
+    form["username"] = TARSUtils.NeonUser
     form["password"] = TARSUtils.NeonPass
 
     br.submit_form(form)
