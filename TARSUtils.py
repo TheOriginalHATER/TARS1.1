@@ -23,6 +23,8 @@ LOGIN_PAGE = "http://www.neondragon.net/ucp.php?mode=login"
 MAIN_FORUM = "http://www.neondragon.net/viewforum.php?f=178"
 
 AUTH_TOKEN = ""
+NeonUser = ""
+NeonPass = ""
 
 
 
@@ -32,7 +34,12 @@ def config():
     config.read('interrobang.ini')
 
     global AUTH_TOKEN
+    global NeonUser
+    global NeonPass
     AUTH_TOKEN = config['DEFAULT']['AUTH_TOKEN']
+    NeonUser = config['DEFAULT']['neonuser']
+    NeonPass = config['DEFAULT']['neonpass']
+
 
 
 
