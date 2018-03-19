@@ -175,7 +175,6 @@ def getvids():
 
 easteregg = "https://i.redd.it/raut0417tzj01.jpg"
 
-
 #Use channel if the uer won't be pulled from ctx, like for targeting in PM
 def getUserFromString(ctx,string,channel=None):
 
