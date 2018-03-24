@@ -10,7 +10,6 @@ from EnumProtocols import Protocols
 from discord.ext import commands
 from WolfUtils import PlayerMini, GameMini, GamePhases
 import WolfUtils
-import scrython
 import asyncio
 import ResponseTaskHandler
 from Actions import Killtype, COMMAND_FLAGS
