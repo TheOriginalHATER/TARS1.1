@@ -106,7 +106,7 @@ class ActionPeek(Action):
             if self.peektype == PeekTypes.BINARY:
                 print("Initiated binary peektype")
 
-                if self.target.role.alignment == roles.Alignment.VILLAGE or roles.Alignment.NEUTRAL:
+                if self.target.role.alignment == roles.Alignment.VILLAGE or self.target.role.alignment == roles.Alignment.NEUTRAL:
                     result = "Not Guilty"
                     if self.target.role.tinker:
                         result = "Guilty"
@@ -162,10 +162,11 @@ class ActionPeek(Action):
 
                         r = random.randint(0, len(self.game.players)-1)
                         player = self.game.players[r]
-                        if (not player.role.tinker) and (not player.role.faction.is_evil):
-                            r0neg = player
-                        elif player.role.tinker and player.role.faction.is_evil:
-                            r0neg = player
+                        if not player == self.source:
+                            if (not player.role.tinker) and (not player.role.faction.is_evil):
+                                r0neg = player
+                            elif player.role.tinker and player.role.faction.is_evil:
+                                r0neg = player
 
                         counter += 1
                         if counter > 1000:

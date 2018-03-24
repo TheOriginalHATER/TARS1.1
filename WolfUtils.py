@@ -80,7 +80,7 @@ async def send_remote_action(ctx,client, flag, targetname=None, game_id = None):
                 string = prev.target.name
 
             source.submitted_actions.append(action)
-            await source.send_logs(flag.name + " action targeting " + target.name + " submitted successfuly. (Previous submitted target: " + string + ")")
+            await source.send_logs(flag.name + " action targeting " + target.name + " submitted successfully. (Previous submitted target: " + string + ")")
 
 
 

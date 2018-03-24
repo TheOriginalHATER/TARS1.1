@@ -14,6 +14,7 @@ import scrython
 import asyncio
 import ResponseTaskHandler
 from Actions import Killtype, COMMAND_FLAGS
+import tarsForums
 
 
 
@@ -27,6 +28,9 @@ bot = commands.Bot(description="TARS is programmed to facilitate the play and ho
 @bot.event
 async def on_ready():
     print('Logged in as ' + bot.user.name)
+
+
+
 
 
 
@@ -47,9 +51,6 @@ async def on_message(message):
 
 
     await bot.process_commands(message)
-
-
-
 
 
 
