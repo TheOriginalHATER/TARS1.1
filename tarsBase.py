@@ -23,7 +23,6 @@ bot = commands.Bot(description="TARS is programmed to facilitate the play and ho
 
 
 
-
 @bot.event
 async def on_ready():
     print('Logged in as ' + bot.user.name)
@@ -45,7 +44,7 @@ async def on_reaction_add(reaction, user):
 @bot.event
 async def on_message(message):
 
-    if ("🍆" in str(message.content)):
+    if "🍆" in str(message.content):
         await bot.add_reaction(message, "🍆")
 
 
@@ -78,6 +77,7 @@ async def nacl(ctx):
     if await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel):
         randomsalt = random.randint(0,len(TARSUtils.SALTY_VIDEOS)-1)
         await bot.say(TARSUtils.SALTY_VIDEOS[randomsalt])
+
 
 
 @bot.command(pass_context=True)
