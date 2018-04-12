@@ -148,7 +148,9 @@ async def werty(ctx):
 @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
 @bot.command(pass_context=True)
 async def markov(ctx,*,arg=None):
-    if await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel):
+    if True:
+        #await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel)
+
         if arg is not None:
             arg = arg.lower()
         else:
@@ -276,6 +278,14 @@ async def sarcastify(ctx, *, string):
             await bot.say(TARSUtils.sarcastify(TARSUtils.BLAZE_RANT2))
         else:
             await bot.say(TARSUtils.sarcastify(string))
+
+
+
+
+@bot.command(pass_context=True)
+async def blazify(ctx, *, string):
+
+    await bot.say(TARSUtils.blazify(string))
 
 
 

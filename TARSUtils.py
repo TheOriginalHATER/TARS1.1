@@ -7,6 +7,7 @@ from EnumProtocols import Protocols
 from bs4 import BeautifulSoup as soup
 from discord.ext import commands
 import configparser
+from autocorrect import spell
 
 
 
@@ -208,6 +209,89 @@ def getUserFromString(ctx,string,channel=None):
 
 
 
+
+
+
+
+
+
+
+def blazify(string):
+    if string is None:
+      return ""
+
+
+    #split the str into words
+    indexedstr = string.split(" ")
+
+    #autocorrect the str with a shitty spellchecker
+    newindex = []
+    for thisword in indexedstr:
+        if "." in thisword or "," in thisword or "?" in thisword or "!" in thisword or "--" in thisword or ";" in thisword:
+            newword = thisword
+        else:
+            newword = spell(thisword)
+        newindex.append(newword)
+
+
+
+
+    #Set up next-to finger keys:
+
+    keyboardlayout = ['w','q','w','e','r','t','y','i','o','p',';','l','k','j','h','g','f','d','s','a','z','x','c','v','b','n','m',',','m']
+
+
+    def getnextkey(letter):
+        if letter in keyboardlayout:
+            index = keyboardlayout.index(letter, 1, 28)
+
+            if random.randint(0,1) == 0:
+                return keyboardlayout[(index+1)]
+            return keyboardlayout[(index - 1)]
+
+
+
+
+        return letter
+
+
+    #throw in random typos
+
+    wordcounter = 0
+    for thisword in newindex:
+        charcounter = 0
+
+        thislist = list(thisword)
+
+
+        for char in thislist:
+
+            if random.randint(0, 12) == 0:
+
+                thislist[charcounter] = getnextkey(char)
+
+
+
+            charcounter =charcounter +1
+        newindex[wordcounter] = "".join(thislist)
+        wordcounter = wordcounter+1
+
+
+
+    #Build the finished str
+
+    finishedstr = ""
+
+    for word in newindex:
+
+        if random.randint(0,7) == 0:
+            space = ""
+        else:
+            space = " "
+
+        finishedstr = finishedstr + word.lower() + space
+
+    return finishedstr.replace("?", "????").replace("!", "!!1!11").replace(".", "!!").replace("literally", "litterary").replace("literary", "litraelly").replace("ea", "ae")
 
 
 
