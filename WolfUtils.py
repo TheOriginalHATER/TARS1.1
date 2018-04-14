@@ -556,7 +556,7 @@ class AutoGame:
             if player_number > 3:
 
                 #Add a cop
-                self.roles.append(roles.Cop(vilfaction))
+                self.roles.append(roles.Doctor(vilfaction))
 
                 self.r0_peeks = RoundZeroPeek.R0_NEG_PEEK
                 self.r0_kill = RoundZeroKill.INJURY

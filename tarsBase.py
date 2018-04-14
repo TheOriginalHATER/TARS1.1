@@ -53,6 +53,13 @@ async def on_message(message):
 
 
 
+@bot.command()
+async def eightball(*,question):
+    await bot.say(TARSUtils.get8ballresponse())
+
+
+
+
 @commands.cooldown(rate=1, per=60, type=commands.BucketType.server)
 @bot.command(pass_context=True)
 async def blazerant(ctx, *,args =""):
@@ -102,7 +109,11 @@ async def currentgame(ctx):
 @bot.command(pass_context=True)
 async def poke(ctx, member:discord.Member):
     if await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel):
-        await bot.say(ctx.message.author.name + " pokes " + member.mention)
+        if member is not None:
+            await bot.say(ctx.message.author.name + " pokes " + member.mention)
+        else:
+            await bot.say("Couldn't identify anyone in this channel by that name. Try using a @mention.")
+
 
 #Waters Numble. Duh.
 #Gated to admins as of 1/24/18 because people kept abusing it and numble got mad
@@ -491,6 +502,11 @@ async def shoot(ctx, targetName=None, game_id=None):
 @bot.command(pass_context=True)
 async def peek(ctx, targetName=None, game_id=None):
     await WolfUtils.send_remote_action(ctx, bot, COMMAND_FLAGS.PEEK, targetName, game_id)
+
+
+@bot.command(pass_context=True)
+async def protect(ctx, targetName=None, game_id=None):
+    await WolfUtils.send_remote_action(ctx, bot, COMMAND_FLAGS.PROTECT, targetName, game_id)
 
 
 @bot.command(pass_context=True)

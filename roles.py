@@ -127,13 +127,13 @@ class Miller(Role):
 class Doctor(Role):
     def __init__(self, faction):
         super(Doctor, self).__init__(faction)
-        self.description = "You are a Village Doctor. You may peek a player each night using ?peek <target name>. "
+        self.description = "You are a Village Doctor. You may peek a player each night using ?protect <target name>. "
         self.name = "Doctor"
         self.alignment = Alignment.VILLAGE
         self.needs_target = True
         self.nightly_message = "It is now night. You may attempt to protect a player by using the ?protect <target> command."
         self.flags.append(COMMAND_FLAGS.PROTECT)
-        self.peektype = Actions.PeekTypes.BINARY
+
 
     def create_action(self, flag, target):
 

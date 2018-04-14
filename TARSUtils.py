@@ -202,7 +202,7 @@ def getUserFromString(ctx,string,channel=None):
                 if string2 in member.name.lower():
                     return member
             string2 = string2[0:(len(string2)-1)]
-            print(string2)
+
 
 
         return None
@@ -291,23 +291,17 @@ def blazify(string):
 
         finishedstr = finishedstr + word.lower() + space
 
-    return finishedstr.replace("?", "????").replace("!", "!!1!11").replace(".", "!!").replace("literally", "litterary").replace("literary", "litraelly").replace("ea", "ae")
+    return finishedstr.replace("?", "????").replace("!", "!!1!11").replace(".", "!!").replace("literally", "litterary").replace("listen","litsen").replace("literary", "litraelly").replace("ea", "ae")
 
 
 
 
 
+def get8ballresponse():
+    responses = ["I won't dignify that with an answer.","Yes","No","maybe","it's possible", "when hell freezes over", "fuck off, not now ok?", "if you're nice to me", "Why do I give a shit?","damnit blaze, you again?"]
+    number = random.randint(0, len(responses) - 1)
 
-
-
-
-
-
-
-
-
-
-
+    return responses[number]
 
 
 def lookupInsult(member:discord.Member):
