@@ -26,6 +26,8 @@ bot = commands.Bot(description="TARS is programmed to facilitate the play and ho
 @bot.event
 async def on_ready():
     print('Logged in as ' + bot.user.name)
+    await tarsForums.login()
+
 
 
 
@@ -57,6 +59,12 @@ async def on_message(message):
 async def eightball(*,question):
     await bot.say(TARSUtils.get8ballresponse())
 
+
+@bot.command(pass_context=True)
+async def makethread(ctx, subject="", message=""):
+    if await checkPermissionRequired(Protocols.VALHALLA, ctx.message.author, ctx.message.channel):
+        await bot.wait_until_ready()
+        await tarsForums.makethread(subject,message)
 
 
 
@@ -880,6 +888,13 @@ async def endmini(ctx):
             await bot.say(ctx.message.author.name + " ended the game.")
 
 
+@bot.command(pass_context=True, aliases=["toast"])
+async def roast(ctx, target):
+    targ = TARSUtils.getUserFromString(ctx, target,ctx.message.channel)
+    if targ is not None:
+        await bot.send_message(ctx.message.channel, TARSUtils.lookupInsult(targ), tts=True)
+    else:
+        await bot.say("No target found.")
 
 
 

@@ -298,18 +298,27 @@ def blazify(string):
 
 
 def get8ballresponse():
-    responses = ["I won't dignify that with an answer.","Yes","No","maybe","it's possible", "when hell freezes over", "fuck off, not now ok?", "if you're nice to me", "Why do I give a shit?","damnit blaze, you again?"]
+    responses = ["I won't dignify that with an answer.","Yes","No","Bruh...Why would you even ask that..?","Of course, dumbass!","maybe","it's possible", "when hell freezes over", "fuck off, not now ok?", "if you're nice to me", "Why do I give a shit?","damnit blaze, you again?"]
     number = random.randint(0, len(responses) - 1)
 
     return responses[number]
 
 
-def lookupInsult(member:discord.Member):
-    if member.id == 3:
-        return "lol"
+def lookupInsult(member):
+    file = open("insult.txt", "r")
+    sults = []
 
-    else:
-        return "ayyluhmayoh"
+    for line in file:
+        sults.append(line.rstrip())
+
+    number  = random.randint(0, len(sults) - 1)
+
+    text = sults[number]
+    text2 = text.replace("&NAME&",member.mention)
+    return text2
+
+
+
 
 
 class ForumTopic:
