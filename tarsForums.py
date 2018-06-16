@@ -39,6 +39,12 @@ async def makethread(subject="", message=""):
     print(br.url)
 
 
+async def postinthread(thread = "", content =""):
+    br =browser_default
+    br.open(thread)
+    form = br.get_form()
+    form["message"] = content
+    br.submit_form(form, submit=form['post'])
 
 
 

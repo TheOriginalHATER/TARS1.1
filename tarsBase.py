@@ -94,6 +94,14 @@ async def nacl(ctx):
         await bot.say(TARSUtils.SALTY_VIDEOS[randomsalt])
 
 
+@bot.command(pass_context=True)
+async def postme(ctx, *, content):
+    if await checkPermissionRequired(Protocols.VALHALLA, ctx.message.author, ctx.message.channel):
+        await tarsForums.postinthread("https://www.neondragon.net/posting.php?mode=reply&f=178&t=31641", "test")
+
+
+
+
 
 @bot.command(pass_context=True)
 async def currentgame(ctx):
@@ -128,12 +136,30 @@ async def poke(ctx, member:discord.Member):
 @commands.cooldown(rate=1, per=10, type=commands.BucketType.server)
 @bot.command(pass_context=True)
 async def houseplant(ctx):
-    if await checkPermissionRequired(Protocols.FOLKVANGR_PLUS, ctx.message.author, ctx.message.channel):
+    if await checkPermissionRequired(Protocols.FOLKVANGR, ctx.message.author, ctx.message.channel):
         if ctx.message.author.id == "271101897388064783":
             await bot.say("You cannot water yourself! Silly houseplant!")
 
         else:
             await bot.say(ctx.message.author.name + " waters " + "<@271101897388064783> .")
+
+
+#Mentions a player, outputs a taco emoji, and reacts with a taco
+@bot.command(pass_context=True)
+async def stc(ctx, *, message):
+    if await checkPermissionRequired(Protocols.VALHALLA, ctx.message.author, ctx.message.channel):
+        channel = bot.get_channel("268524263768588291")
+        await bot.send_message(channel, message)
+
+@bot.command(pass_context=True)
+async def updatearchive(ctx):
+    if await checkPermissionRequired(Protocols.VALHALLA, ctx.message.author, ctx.message.channel):
+        await TARSUtils.getnewposts(bot)
+        await bot.say("Probe finished.")
+
+
+
+
 
 
 #Mentions a player, outputs a taco emoji, and reacts with a taco
@@ -167,8 +193,20 @@ async def werty(ctx):
 @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
 @bot.command(pass_context=True)
 async def markov(ctx,*,arg=None):
-    if True:
-        #await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel)
+
+    if len(ResponseTaskHandler.CURRENT_RUNNING_GAMES) < 1:
+        try:
+            await do_markov(ctx,arg)
+        except Exception as e:
+            await bot.say("oof")
+
+    else:
+        await bot.say("There is currently 1 or more games running. Please wait for those games to close before using the ?markov command.")
+
+
+async def do_markov(ctx,arg):
+    if await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel):
+
 
         if arg is not None:
             arg = arg.lower()
@@ -189,16 +227,25 @@ async def markov(ctx,*,arg=None):
             await bot.say("Attempting...")
         chain = " "
         lastmessage = None
-
+        containsword = False
         async for message in bot.logs_from(ctx.message.channel, limit=messagelimit):
             if not message.author.id == "403394686816878593":
                 if ":twerkriot:" not in message.content.lower():
                     lastmessage = message
                     chain = chain + message.content.lower() + "\n"
+                    if arg is not None and arg in message.content:
+                        containsword = True
+        if hard or arg == "oldest" or arg == "quiet" or arg == "sarcastify":
+            containsword = True
+
+        if not containsword:
+            await bot.say("Can't complete this request. Check to see if recent messages in this channel start with the selected keyword.")
+            return
 
         if not arg == "oldest":
 
             model = markovify.NewlineText(chain)
+
 
             if hard:
                 sentence = model.make_short_sentence(550, 210, tries=5000)
@@ -224,6 +271,7 @@ async def markov(ctx,*,arg=None):
                 await bot.send_message(ctx.message.channel, "OH YEAH BABY, "+sentence.upper(), tts=True)
 
             else:
+
                 await bot.send_message(ctx.message.channel, sentence, tts=True)
         else:
             await bot.say("Currently the messages I'm choosing from were logged from: " + str(lastmessage.timestamp) + " to " + str(ctx.message.timestamp))
@@ -238,7 +286,9 @@ async def make_seeded_sentence(model, seed, tries, max_chars, min_chars=0):
                 return sentence
 
     #YOLO I HAD TO TRY SOMETHING
-    except Exception:
+    except asyncio.CancelledError as e:
+        print("Break it out")
+        raise e # Raise a proper error
         print("WARNING...!")
         return "There was definitely an error here. But hopefully the bot didn't crash, so that's good."
 
@@ -262,13 +312,17 @@ async def requestaccess(ctx, rankRaw, forumid):
             print(rank.stylizedName +" protocol requested by " + ctx.message.author.name + " with forum id: " + forumid)
 
             #LOL FUCK YOU FOR BEING POWER HUNGRY BIIIIIIIIIIITCH
-        elif rank.level == 2:
+        elif rank.level == 2 :
+            #and not ctx.message.author.id  == "273147209376202760"
             await bot.say("Your information has been logged. Request for Náströnd protocols granted.")
             id = discord.utils.get(ctx.message.server.roles, id=Protocols.NASTROND.id)
             await bot.add_roles(ctx.message.author, id)
 
             print("Náströnd protocol requested by " +ctx.message.author.name + " with forum id: " + forumid)
             #SO YOU KNOW YOUR FUCKING PLACE YOU GRUNT-ASS BITCH
+        else:
+
+            await bot.say("You have been barred from requesting protocol access at this level.")
 
 
 
@@ -899,10 +953,69 @@ async def roast(ctx, target):
 
 
 
+@bot.command(pass_context=True)
+async def markovthread(ctx):
+    if await checkPermissionRequired(Protocols.NASTROND, ctx.message.author, ctx.message.channel):
+        games = TARSUtils.game_topics
+        chosen = None
+        if ctx.message.channel.id == "271099779029794816":
+            for game in games:
+                if game.title.startswith("Werewolf") or game.title.startswith("WW"):
+                    chosen = game
+                    break
+
+
+        elif ctx.message.channel.id == "271099731298615297":
+            for game in games:
+                if game.title.startswith("Assassins") or game.title.startswith("Witch Hunt"):
+                    chosen = game
+                    break
+        elif ctx.message.channel.id == "271099667587137537":
+            for game in games:
+                if game.title.startswith("Mafia"):
+                    chosen = game
+                    break
+
+
+        if chosen is not None:
+            posts = await TARSUtils.archiveposts(chosen.link,chosen.posts)
+
+            chain = ""
+
+            for post in posts:
+                chain = chain + post.content.lower() + "\n"
+
+
+            model = markovify.NewlineText(chain)
+            sentence = model.make_short_sentence(500, 120, tries=400)
+            if sentence is None:
+                await bot.say("Could not construct a sentence in the given number of tries.")
+            else:
+
+                await bot.send_message(ctx.message.channel, sentence, tts=True)
+
+
+
+
+        else:
+            await bot.say("No game of the appropriate type found (please use the appropriate game channel).")
+
+
+
+
+async def check_posts_task():
+    await bot.wait_until_ready()
+
+    while not bot.is_closed:
+
+        print("Scanning topics.")
+        await TARSUtils.getnewposts(bot)
+        await asyncio.sleep(60)
 
 
 
 
 
+bot.loop.create_task(check_posts_task())
 bot.run(TARSUtils.AUTH_TOKEN)
 

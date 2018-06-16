@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup as soup
 from discord.ext import commands
 import configparser
 from autocorrect import spell
+import asyncio
+import math
 
 
 
@@ -28,6 +30,19 @@ NeonUser = ""
 NeonPass = ""
 
 
+game_topics = []
+
+
+
+class ForumPost:
+    def __init__(self, author, content):
+        self.author = author
+        self.content = content
+        self.link=""
+
+
+    def displayreadout(self):
+        return "Post by " + self.author + ":\n\n"+ self.content + "\n\nDirect link: " + self.link
 
 
 def config():
@@ -112,10 +127,149 @@ def findCurrentGames():
         title = row.a.text
         author = auths[0].a.text
         link = row.a["href"]
-        topic = ForumTopic(title, author, link)
+        postsrow = rows[2].findAll("p", {"class": "topicdetails"})
+        posts = postsrow[0].a.text
+        topic = ForumTopic(title, author, link, posts)
         topics.append(topic)
 
+
     return topics
+
+
+
+
+async def archiveposts(forumlink, amount):
+    user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+    headers = {'User-Agent': user_agent, }
+
+    pages = int(math.ceil(amount / 15))
+    posts = []
+    for x in range(0, pages):
+
+        request = urllib.request.Request(forumlink + "&start=" + str(x * 15), None, headers)
+
+        uClient = urlopen(request)
+        page_html = uClient.read()
+        uClient.close()
+        page_soup2 = soup(page_html, "html.parser")
+
+        newpostsraw = page_soup2.findAll("div", {"class": "postbody"})
+        newpostsauthors = page_soup2.findAll("div", {"class": "postauthor"})
+        newpostslinks = page_soup2.findAll("div", {"class": "postsubject"})
+
+        for y in range(0, len(newpostsraw)):
+            post = ForumPost(newpostsauthors[y].text, newpostsraw[y].get_text("\n"))
+            post.link = "http://www.neondragon.net" + newpostslinks[y].a['href'].lstrip(".").split("&sid")[0]
+            post.link= post.link +"#"+ post.link.split("p=")[1]
+            posts.append(post)
+            asyncio.sleep(0)
+
+
+    return posts
+
+
+async def getnewposts(client):
+    user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+    headers = {'User-Agent': user_agent, }
+
+    request = urllib.request.Request(MAIN_FORUM, None, headers)
+
+    uClient = urlopen(request)
+    page_html = uClient.read()
+    uClient.close()
+    page_soup = soup(page_html, "html.parser")
+
+    stickies = page_soup.findAll("tr", {"class": "topicsticky"})
+
+    topics = []
+
+    for sticky in stickies:
+        rows = sticky.findAll("td", {"class": "row1"})
+        row = rows[1]
+
+        auths = row.findAll("p", {"class": "topicauthor"})
+
+        title = row.a.text
+        author = auths[0].a.text
+        link = row.a["href"]
+
+        postsrow = rows[2].findAll("p", {"class": "topicdetails"})
+        postsnumber = int(postsrow[0].a.text)
+
+        topic = ForumTopic(title, author, link, postsnumber)
+        topics.append(topic)
+        await asyncio.sleep(0)
+
+
+    for topic in topics:
+
+        stored = False
+        for gametopic in game_topics:
+
+            if topic.title == gametopic.title:
+
+                stored = True
+                if topic.posts > gametopic.posts:
+
+                    channel = None
+                    if topic.title.startswith("Mafia"):
+                        channel = client.get_channel("271099667587137537")
+                    elif topic.title.startswith("Assassins") or topic.title.startswith("Witch Hunt"):
+                        channel = client.get_channel("271099731298615297")
+                    elif topic.title.startswith("WW") or topic.title.startswith("Werewolf"):
+                        channel = client.get_channel("271099779029794816")
+                    if channel is not None:
+
+                        fetch = topic.posts - gametopic.posts
+                        archive = await archiveposts(topic.link, topic.posts)
+
+                        #await client.send_message(channel, str(
+                        #    fetch) + " new post(s) detected in topic: " + topic.title + " since last updated.")
+
+
+                        for x in range(len(archive)-fetch,  len(archive)):
+                            readout = str(archive[x].displayreadout())
+                            if len(readout) > 1800:
+
+                                reads = [readout[i:i + 1800] for i in range(0, len(readout), 1800)]
+                                for read in reads:
+                                    await client.send_message(channel, read)
+
+
+                            else:
+
+                                await client.send_message(channel, readout)
+
+
+                        await asyncio.sleep(0)
+
+                game_topics.remove(gametopic)
+                game_topics.append(topic)
+
+
+        if not stored:
+            game_topics.append(topic)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -322,10 +476,12 @@ def lookupInsult(member):
 
 
 class ForumTopic:
-    def __init__(self, title, author, link):
+    def __init__(self, title, author, link, posts):
         self.title = title
         self.author = author
         self.link = "http://www.neondragon.net" + link.lstrip(".")
+        self.posts = posts
+
 
 
 

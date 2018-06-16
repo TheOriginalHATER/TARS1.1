@@ -69,7 +69,7 @@ class Action:
 
 class ActionProtect(Action):
     def __init__(self,flag,game,source,target):
-        super(ActionProtect).__init__(flag, game, source, target)
+        super(ActionProtect, self).__init__(flag, game, source, target)
 
         #Declare the gamephase that this action resolves in
         self.phase = WolfUtils.GamePhases.PROTECTION

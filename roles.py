@@ -127,7 +127,7 @@ class Miller(Role):
 class Doctor(Role):
     def __init__(self, faction):
         super(Doctor, self).__init__(faction)
-        self.description = "You are a Village Doctor. You may peek a player each night using ?protect <target name>. "
+        self.description = "You are a Village Doctor. You may protect a player each night using ?protect <target name>. "
         self.name = "Doctor"
         self.alignment = Alignment.VILLAGE
         self.needs_target = True
